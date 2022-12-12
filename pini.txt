@@ -13,3 +13,5 @@ pb2-a
 pb1-alarma
 pc4= frina trasa gnd
 pc1-usa deschisa gnd
+
+dd
