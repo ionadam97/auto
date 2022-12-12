@@ -9,23 +9,16 @@
 #define pc3 A3
 #define pot_pin A5
 
-bool flag_cip = 0;
-bool flag_avarie = 0;
-bool flag_starter = 0;
-bool flag_panou = 0;
-bool flag_periferice = 0;
-bool flag_incuie = 0;
-bool flag_descuie = 0;
 bool flag_pornire = 0;  
 
-int secunda = 1000;
+int secunda = 500;
 int timp_incuie_descuie = 0.6 *secunda;
 uint16_t minut = 60 * secunda;
 uint32_t timp_panou = 2 * minut;
 uint32_t timp_periferice;
 uint32_t timp_cip;
 uint32_t timp_pot;
-int timp_starter = 0.5 *secunda;
+int timp_starter = 1 *secunda;
 int timp_avarie;
 int val;
 
@@ -60,7 +53,8 @@ void setup() {
 //  b_descuie.setType(LOW_PULL);
 //  b_starter.setType(LOW_PULL);
   
-  
+  b_incuie.setClickTimeout(200);
+  b_starter.setTimeout(1000);
 
   
   Serial.begin(9600);
@@ -82,17 +76,17 @@ void loop() {
   periferice.out(timp_periferice);
   cip.out(timp_cip);
   
-  if (b_incuie.isPress()){
+  if (b_incuie.isClick()){
     Serial.println("incuie");
    incuie.out(timp_incuie_descuie, 1);
-   avarie.out(timp_avarie = 1.5 *secunda,1 );
+   avarie.out(timp_avarie = 2 *secunda,1 );
    periferice.out(0);
    cip.out(0);
  }
 
- if (b_incuie.isDouble()){
+ if (b_incuie.isHold()){
   incuie.out(timp_incuie_descuie, 1);
-  avarie.out(timp_avarie = 1.5 *secunda,1 );
+  avarie.out(timp_avarie = 2 *secunda,1 );
   periferice.out(timp_periferice = 30 *minut, 1);
   cip.out(0);
  }
