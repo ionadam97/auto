@@ -11,7 +11,7 @@
 
 bool flag_pornire = 0;  
 
-int secunda = 500;
+int secunda = 1000;
 int timp_incuie_descuie = 0.6 *secunda;
 uint16_t minut = 60 * secunda;
 uint32_t timp_panou = 2 * minut;
@@ -154,17 +154,22 @@ void loop() {
    }
   }
 
-if (periferice.out(timp_periferice) && millis() - timp_pot > 30 * secunda){
+if (periferice.out(timp_periferice) && millis() - timp_pot > 2 * secunda){
     val = voltaj(pot_pin);
     timp_pot = millis(); 
-    if (val >= 1350)periferice.out(timp_periferice = 30 *minut, 1);
+    if (val >= 1300)periferice.out(timp_periferice = 30 *minut, 1);
+    
 }
-
+if (flag_pornire && !b_frina.state()){
+    flag_pornire = 0;
+    cip.out(0);
+    panou.out(0);     
+   } 
 
 if (panou.out(timp_panou) && flag_pornire && millis() - timp_pot > 0.5 * secunda){
     val = voltaj(pot_pin);
     timp_pot = millis();
-    if (val >= 1350){
+    if (val >= 1300){
       Serial.println(val);
       avarie.out(timp_avarie = 1.2 *secunda, 1);
     }
