@@ -19,6 +19,7 @@ bool flag_descuie = 0;
 bool flag_pornire = 0;  
 
 int secunda = 1000;
+int timp_incuie_descuie = 0.6 *secunda;
 uint16_t minut = 60 * secunda;
 uint32_t timp_panou = 2 * minut;
 uint32_t timp_periferice;
@@ -73,61 +74,61 @@ void loop() {
   b_frina.tick();
   b_usi.tick();
  
-  if (flag_incuie) flag_incuie = incuie.out();
-  if (flag_descuie) flag_descuie = descuie.out();
-  if (flag_avarie) flag_avarie = avarie.out(timp_avarie);
-  if (flag_panou) flag_panou = panou.out(timp_panou);
-  if (flag_starter) flag_starter = starter.out(timp_starter);
-  if (flag_periferice) flag_periferice = periferice.out(timp_periferice);
-  if (flag_cip) flag_cip = cip.out(timp_cip);
+  incuie.out(timp_incuie_descuie);
+  descuie.out(timp_incuie_descuie);
+  avarie.out(timp_avarie);
+  panou.out(timp_panou);
+  starter.out(timp_starter);
+  periferice.out(timp_periferice);
+  cip.out(timp_cip);
   
   if (b_incuie.isPress()){
     Serial.println("incuie");
-   flag_incuie = incuie.out();
-   flag_avarie = avarie.out(timp_avarie = 1.5 *secunda,1 );
-   flag_periferice = periferice.out(0);
-   flag_cip = cip.out(0);
+   incuie.out(timp_incuie_descuie, 1);
+   avarie.out(timp_avarie = 1.5 *secunda,1 );
+   periferice.out(0);
+   cip.out(0);
  }
 
  if (b_incuie.isDouble()){
-  flag_incuie = incuie.out();
-  flag_avarie = avarie.out(timp_avarie = 1.5 *secunda,1 );
-  flag_periferice = periferice.out(timp_periferice = 30 *minut, 1);
-  flag_cip = cip.out(0);
+  incuie.out(timp_incuie_descuie, 1);
+  avarie.out(timp_avarie = 1.5 *secunda,1 );
+  periferice.out(timp_periferice = 30 *minut, 1);
+  cip.out(0);
  }
 
  if (b_descuie.isPress()){
    Serial.println("descuie");
-   flag_descuie = descuie.out();
-   flag_avarie = avarie.out(timp_avarie = 1 *secunda, 1); 
-   flag_periferice = periferice.out(timp_periferice = 30 *minut, 1);
-   flag_cip = cip.out(timp_cip = 30 *minut, 1);
+   descuie.out(timp_incuie_descuie, 1);
+   avarie.out(timp_avarie = 1 *secunda, 1); 
+   periferice.out(timp_periferice = 30 *minut, 1);
+   cip.out(timp_cip = 30 *minut, 1);
  }
 
  if (b_panou.isPress()){
    Serial.println("panou");
-   if(!flag_panou){
-    flag_avarie = avarie.out(timp_avarie = 0.5 *secunda, 1);
-    flag_cip = cip.out(timp_cip = timp_panou, 1);
-    flag_panou = panou.out(timp_panou);
+   if(!panou.out(timp_panou)){
+    avarie.out(timp_avarie = 0.5 *secunda, 1);
+    cip.out(timp_cip = timp_panou, 1);
+    panou.out(timp_panou, 1);
    } 
    else{
     flag_pornire = 0;
-    flag_cip = cip.out(0);
-    flag_panou = panou.out(0);     
+    cip.out(0);
+    panou.out(0);     
    } 
 }
  
- if (b_starter.isPress()&& flag_panou && !flag_pornire && b_frina.state()){
-   Serial.println("start");
-  flag_starter = starter.out(timp_starter);
+ if (b_starter.isPress()&& panou.out(timp_panou) && !flag_pornire && b_frina.state()){
+  Serial.println("start");
+  starter.out(timp_starter, 1);
   flag_pornire = 1;  
 
  }
  
- if (b_starter.isHold() && !flag_panou){
+ if (b_starter.isHold() && !panou.out(timp_panou)){
   Serial.println("hold");
-  flag_avarie = avarie.out(timp_avarie = 6 *secunda, 1);
+  avarie.out(timp_avarie = 6 *secunda, 1);
   for (uint32_t tmr = millis(); millis() - tmr < 6 *secunda;) {
     b_incuie.tick();
     b_descuie.tick();
@@ -137,34 +138,41 @@ void loop() {
     if (b_incuie.isPress()){
       timp_panou = 4 *minut;
       Serial.println("4 min");
-      flag_avarie = avarie.out(0);
+      avarie.out(0);
       break;
     }
     if (b_panou.isPress()){
       timp_panou = 6 *minut;
       Serial.println("6 min");
-      flag_avarie = avarie.out(0);
+      avarie.out(0);
       break;
     }
     if (b_descuie.isPress()){
       timp_panou = 8 *minut;
       Serial.println("8 min");
-      flag_avarie = avarie.out(0);
+      avarie.out(0);
       break;
     }
     if (b_starter.isPress()){
-      flag_avarie = avarie.out(0);
+      avarie.out(0);
       break;
     }   
    }
   }
-  
-if (flag_panou && flag_pornire && millis() - timp_pot > 0.5 * secunda){
+
+if (periferice.out(timp_periferice) && millis() - timp_pot > 30 * secunda){
+    val = voltaj(pot_pin);
+    timp_pot = millis(); 
+    if (val >= 1350)periferice.out(timp_periferice = 30 *minut, 1);
+}
+
+
+if (panou.out(timp_panou) && flag_pornire && millis() - timp_pot > 0.5 * secunda){
     val = voltaj(pot_pin);
     timp_pot = millis();
     if (val >= 1350){
       Serial.println(val);
-      flag_avarie = avarie.out(timp_avarie = 1.2 *secunda, 1);
+      avarie.out(timp_avarie = 1.2 *secunda, 1);
     }
   }
   

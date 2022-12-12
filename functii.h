@@ -6,9 +6,9 @@ class OUT {
       pinMode(_pin, OUTPUT);
     }
 
-    int out(uint16_t _prd = 300, bool flag = 0) {
-      if (flag)_tmr = millis();    
-      if (!_flag && _prd >0) {
+    int out(uint16_t _prd , bool flag_1 = 0) {
+      if (flag_1)_tmr = millis();    
+      if (!_flag && flag_1 && _prd >0) {
         _tmr = millis();
         _flag = 1;
         digitalWrite(_pin, _flag);
