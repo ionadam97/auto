@@ -6,8 +6,9 @@ class OUT {
       pinMode(_pin, OUTPUT);
     }
 
-    int out(uint16_t _prd = 600) {
-      if (!_flag) {
+    int out(uint16_t _prd = 300, bool flag = 0) {
+      if (flag)_tmr = millis();    
+      if (!_flag && _prd >0) {
         _tmr = millis();
         _flag = 1;
         digitalWrite(_pin, _flag);
@@ -25,3 +26,13 @@ class OUT {
     uint16_t _prd;
     bool _flag;
 };
+
+
+int voltaj(byte pin){
+  int val;
+  val = analogRead(pin); // citeste datele
+  val = map(val, 0, 1023, 0, 1000); //schimba diapazonul de masurare
+  val = constrain(val, 0, 1000);//schimba diapazonul de masurare
+  val = val * 0.49 *3;// valoarea dc dc
+  return val;
+  }
