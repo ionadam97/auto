@@ -15,5 +15,5 @@ pc4= frina trasa gnd
 pc1-usa deschisa gnd
 
 dd
-
+4
 k
