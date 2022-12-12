@@ -1,0 +1,15 @@
+pb0-starter
+pd7-panou
+pd6-periferice
+pd5-cip
+pd4-descuie
+pd3-incuie
+pd2-avarie
+
+pb5-d
+pb4-c
+pb3-b
+pb2-a
+pb1-alarma
+pc4= frina trasa gnd
+pc1-usa deschisa gnd
