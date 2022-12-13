@@ -10,15 +10,15 @@
 #define pot_pin A5
 
 bool flag_pornire = 0;  
-
+// bool frina;
 int secunda = 1000;
 int timp_incuie_descuie = 0.6 *secunda;
 uint16_t minut = 60 * secunda;
-uint32_t timp_panou = 2 * minut;
+uint32_t timp_panou = 300000;
 uint32_t timp_periferice;
 uint32_t timp_cip;
 uint32_t timp_pot;
-int timp_starter = 1 *secunda;
+int timp_starter = 0.7 *secunda;
 int timp_avarie;
 int val;
 
@@ -52,7 +52,7 @@ void setup() {
 //  b_panou.setType(LOW_PULL);
 //  b_descuie.setType(LOW_PULL);
 //  b_starter.setType(LOW_PULL);
-  
+// pinMode(A4, INPUT_PULLUP);
   b_incuie.setClickTimeout(200);
   b_starter.setTimeout(1000);
 
@@ -67,6 +67,7 @@ void loop() {
   b_starter.tick();
   b_frina.tick();
   b_usi.tick();
+  // frina = !digitalRead(A4);
  
   incuie.out(timp_incuie_descuie);
   descuie.out(timp_incuie_descuie);
@@ -113,7 +114,7 @@ void loop() {
    } 
 }
  
- if (b_starter.isPress()&& panou.out(timp_panou) && !flag_pornire && b_frina.state()){
+ if (b_starter.isPress() && b_frina.state() && panou.out(timp_panou) && !flag_pornire){
   Serial.println("start");
   starter.out(timp_starter, 1);
   flag_pornire = 1;  
