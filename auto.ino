@@ -1,36 +1,6 @@
 #include "GyverButton.h"
 #include "functii.h"
 
-#define a 10
-#define b 11
-#define c 12
-#define d 13
-#define pc4 A4
-#define pc3 A3
-#define pot_pin A5
-
-bool flag_pornire = 0;  
-// bool frina;
-int secunda = 1000;
-int timp_incuie_descuie = 0.6 *secunda;
-uint16_t minut = 60 * secunda;
-uint32_t timp_panou = 300000;
-uint32_t timp_periferice;
-uint32_t timp_cip;
-uint32_t timp_pot;
-int timp_starter = 0.7 *secunda;
-int timp_avarie;
-int val;
-
-GButton b_incuie(a);
-GButton b_panou(b);
-GButton b_descuie(c);
-GButton b_starter(d);
-GButton b_frina(pc4);
-GButton b_usi(pc3);
-
-
-
 #define avarie_output 2
 #define incuie_output 3
 #define descuie_output 4
@@ -39,6 +9,33 @@ GButton b_usi(pc3);
 #define panou_output 7
 #define starter_output 8
 #define alarma 9
+#define a 10
+#define b 11
+#define c 12
+#define d 13
+#define pc4 A4
+#define pc3 A3
+#define pot_pin A5
+
+bool flag_pornire = 0;
+int volt;  
+uint32_t secunda = 500;
+uint32_t timp_incuie_descuie = 0.6 *secunda;
+uint32_t minut = 60 * secunda;
+uint32_t timp_panou = 4 * minut;
+uint32_t timp_periferice;
+uint32_t timp_per;
+uint32_t timp_cip;
+uint32_t timp_pot;
+uint32_t timp_starter = 1 *secunda;
+uint32_t timp_avarie;
+
+GButton b_incuie(a);
+GButton b_panou(b);
+GButton b_descuie(c);
+GButton b_starter(d);
+GButton b_frina(pc4);
+GButton b_usi(pc3);
 
 OUT cip(cip_output);
 OUT starter(starter_output);
@@ -52,9 +49,9 @@ void setup() {
 //  b_panou.setType(LOW_PULL);
 //  b_descuie.setType(LOW_PULL);
 //  b_starter.setType(LOW_PULL);
-// pinMode(A4, INPUT_PULLUP);
-  b_incuie.setClickTimeout(200);
-  b_starter.setTimeout(1000);
+  b_incuie.setClickTimeout(0.3 *secunda);
+  b_incuie.setTimeout(4 * secunda);
+  b_starter.setTimeout(4 * secunda);
 
   
   Serial.begin(9600);
@@ -67,7 +64,6 @@ void loop() {
   b_starter.tick();
   b_frina.tick();
   b_usi.tick();
-  // frina = !digitalRead(A4);
  
   incuie.out(timp_incuie_descuie);
   descuie.out(timp_incuie_descuie);
@@ -80,14 +76,14 @@ void loop() {
   if (b_incuie.isClick()){
     Serial.println("incuie");
    incuie.out(timp_incuie_descuie, 1);
-   avarie.out(timp_avarie = 2 *secunda,1 );
+   avarie.out(timp_avarie = 2.5 *secunda,1 );
    periferice.out(0);
    cip.out(0);
  }
 
  if (b_incuie.isHold()){
   incuie.out(timp_incuie_descuie, 1);
-  avarie.out(timp_avarie = 2 *secunda,1 );
+  avarie.out(timp_avarie = 2.5 *secunda,1 );
   periferice.out(timp_periferice = 30 *minut, 1);
   cip.out(0);
  }
@@ -112,7 +108,7 @@ void loop() {
     cip.out(0);
     panou.out(0);     
    } 
-}
+ }
  
  if (b_starter.isPress() && b_frina.state() && panou.out(timp_panou) && !flag_pornire){
   Serial.println("start");
@@ -155,31 +151,27 @@ void loop() {
    }
   }
 
-if (periferice.out(timp_periferice) && millis() - timp_pot > 2 * secunda){
-    val = voltaj(pot_pin);
-    timp_pot = millis(); 
-    if (val >= 1300)periferice.out(timp_periferice = 30 *minut, 1);
-    
-}
+if (periferice.out(timp_periferice) && millis() - timp_per > 2 * secunda){
+    volt = voltaj(pot_pin);
+    timp_per = millis(); 
+    if (volt >= 1300){
+      periferice.out(timp_periferice = 30 *minut, 1);
+      cip.out(timp_cip = 30 *minut, 1);
+    }
+  }
 if (flag_pornire && !b_frina.state()){
     flag_pornire = 0;
-    cip.out(0);
     panou.out(0);     
    } 
 
 if (panou.out(timp_panou) && flag_pornire && millis() - timp_pot > 0.5 * secunda){
-    val = voltaj(pot_pin);
+    volt = voltaj(pot_pin);
     timp_pot = millis();
-    if (val >= 1300){
-      Serial.println(val);
+    if (volt >= 1300){
+      Serial.println(volt);
       avarie.out(timp_avarie = 1.2 *secunda, 1);
     }
   }
   
-
-  
-
-
-
  
 }

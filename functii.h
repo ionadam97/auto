@@ -6,7 +6,7 @@ class OUT {
       pinMode(_pin, OUTPUT);
     }
 
-    int out(uint16_t _prd , bool flag_1 = 0) {
+    int out(uint32_t _prd , bool flag_1 = 0) {
       if (flag_1)_tmr = millis();    
       if (!_flag && flag_1 && _prd >0) {
         _tmr = millis();
@@ -17,13 +17,14 @@ class OUT {
         _flag = 0;
         digitalWrite(_pin, _flag);
       }
+      
       return _flag ;
     }
 
   private:
     byte _pin;
     uint32_t _tmr;
-    uint16_t _prd;
+    uint32_t _prd;
     bool _flag;
 };
 
